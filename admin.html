@@ -80,6 +80,45 @@
         </section>
       </section>
     </main>
+
+    <dialog id="edit-order-dialog" class="edit-dialog" aria-labelledby="edit-order-title">
+      <form method="dialog" class="edit-form">
+        <header class="edit-header">
+          <h2 id="edit-order-title">Redaguoti užsakymą</h2>
+          <button type="button" class="icon-close" id="cancel-edit" aria-label="Užverti">×</button>
+        </header>
+        <div class="edit-body">
+          <div class="edit-grid">
+            <label><span>Vardas, pavardė</span><input name="customer" type="text" required maxlength="150" /></label>
+            <label><span>Telefonas</span><input name="phone" type="tel" maxlength="60" /></label>
+            <label><span>El. paštas</span><input name="email" type="email" maxlength="150" /></label>
+            <label><span>Data</span><input name="date" type="date" /></label>
+            <label><span>Būsena</span>
+              <select name="status" required>
+                <option>Naujas</option>
+                <option>Patvirtintas</option>
+                <option>Įvykdytas</option>
+                <option>Atšauktas</option>
+              </select>
+            </label>
+          </div>
+          <div class="edit-items-block">
+            <div class="edit-items-head">
+              <h3>Prekės</h3>
+              <button type="button" id="add-item" class="text-button">+ Pridėti prekę</button>
+            </div>
+            <div id="edit-items" class="edit-items"></div>
+            <p class="edit-total-row">Suma: <strong id="edit-total">0,00 €</strong></p>
+          </div>
+          <label class="edit-notes"><span>Pastabos</span><textarea name="notes" rows="3" maxlength="1000"></textarea></label>
+        </div>
+        <footer class="edit-footer">
+          <button type="button" class="text-button" id="cancel-edit-2">Atšaukti</button>
+          <button type="submit" class="button button-dark">Išsaugoti</button>
+        </footer>
+      </form>
+    </dialog>
+
     <script src="admin.js"></script>
   </body>
 </html>

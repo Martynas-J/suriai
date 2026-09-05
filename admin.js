@@ -42,6 +42,7 @@ async function apiRequest(method, path, body) {
 const apiGet    = (path) => apiRequest('GET', path);
 const apiPost   = (path, body) => apiRequest('POST', path, body);
 const apiPatch  = (path, body) => apiRequest('PATCH', path, body);
+const apiPut    = (path, body) => apiRequest('PUT', path, body);
 const apiDelete = (path) => apiRequest('DELETE', path);
 
 function isLoggedIn() { return Boolean(getToken() && getStoredUser()); }
@@ -162,7 +163,7 @@ function renderOrders() {
   const pageOrders = orders.slice(start, start + adminState.pageSize);
   document.querySelector('#order-total').textContent = `${allOrders.length} visi užsakymai`;
   document.querySelector('#orders-summary').textContent = orders.length ? `Rodomi ${start + 1}–${Math.min(start + adminState.pageSize, orders.length)} iš ${orders.length} užsakymų` : 'Pagal filtrus užsakymų nėra';
-  document.querySelector('#orders-list').innerHTML = pageOrders.length ? pageOrders.map(order => `<article class="order-item"><div><h3>${getOrderItemsText(order)}</h3><p>Pristatymas / atsiėmimas: ${escapeHTML(order.date)}</p><p>${escapeHTML(order.notes) || 'Be pastabų'}</p></div><div><p><strong>${escapeHTML(order.customer)}</strong></p><p>${escapeHTML(order.phone)}</p><p>${escapeHTML(order.email)}</p></div><div><p>Pateikta</p><p>${new Date(order.createdAt).toLocaleString('lt-LT')}</p></div><div class="order-status"><select class="status-select" data-id="${order.id}"><option ${order.status === 'Naujas' ? 'selected' : ''}>Naujas</option><option ${order.status === 'Patvirtintas' ? 'selected' : ''}>Patvirtintas</option><option ${order.status === 'Įvykdytas' ? 'selected' : ''}>Įvykdytas</option><option ${order.status === 'Atšauktas' ? 'selected' : ''}>Atšauktas</option></select><strong>${money(getOrderTotal(order))}</strong><button type="button" class="delete-order" data-id="${order.id}" data-customer="${escapeHTML(order.customer)}" aria-label="Ištrinti užsakymą">Trinti</button></div></article>`).join('') : '<p class="empty">Užsakymų pagal pasirinktus filtrus nėra.</p>';
+  document.querySelector('#orders-list').innerHTML = pageOrders.length ? pageOrders.map(order => `<article class="order-item"><div><h3>${getOrderItemsText(order)}</h3><p>Pristatymas / atsiėmimas: ${escapeHTML(order.date)}</p><p>${escapeHTML(order.notes) || 'Be pastabų'}</p></div><div><p><strong>${escapeHTML(order.customer)}</strong></p><p>${escapeHTML(order.phone)}</p><p>${escapeHTML(order.email)}</p></div><div><p>Pateikta</p><p>${new Date(order.createdAt).toLocaleString('lt-LT')}</p></div><div class="order-status"><select class="status-select" data-id="${order.id}"><option ${order.status === 'Naujas' ? 'selected' : ''}>Naujas</option><option ${order.status === 'Patvirtintas' ? 'selected' : ''}>Patvirtintas</option><option ${order.status === 'Įvykdytas' ? 'selected' : ''}>Įvykdytas</option><option ${order.status === 'Atšauktas' ? 'selected' : ''}>Atšauktas</option></select><strong>${money(getOrderTotal(order))}</strong><div class="order-actions"><button type="button" class="edit-order" data-id="${order.id}" aria-label="Redaguoti užsakymą">Redaguoti</button><button type="button" class="delete-order" data-id="${order.id}" data-customer="${escapeHTML(order.customer)}" aria-label="Ištrinti užsakymą">Trinti</button></div></div></article>`).join('') : '<p class="empty">Užsakymų pagal pasirinktus filtrus nėra.</p>';
   document.querySelectorAll('.status-select').forEach(select => select.onchange = async () => {
     const id = select.dataset.id;
     const previous = select.value;
@@ -192,6 +193,11 @@ function renderOrders() {
       alert('Nepavyko ištrinti užsakymo: ' + err.message);
       btn.disabled = false;
     }
+  });
+  document.querySelectorAll('.edit-order').forEach(btn => btn.onclick = () => {
+    const id = btn.dataset.id;
+    const order = allOrders.find(o => o.id === id);
+    if (order) openEditOrderDialog(order);
   });
   renderPagination(totalPages);
 }
@@ -245,6 +251,105 @@ function buildOrdersText(format) {
     return { content: html, mime: 'application/msword', filename: `uzsakymai-${stamp.replace(/[: ]/g, '-')}.doc` };
   }
   return { content: header + body, mime: 'text/plain;charset=utf-8', filename: `uzsakymai-${stamp.replace(/[: ]/g, '-')}.txt` };
+}
+
+function openEditOrderDialog(order) {
+  const dialog = document.querySelector('#edit-order-dialog');
+  if (!dialog) return;
+  const form = dialog.querySelector('form');
+  form.querySelector('[name=customer]').value = order.customer || '';
+  form.querySelector('[name=phone]').value = order.phone || '';
+  form.querySelector('[name=email]').value = order.email || '';
+  form.querySelector('[name=date]').value = order.date || '';
+  form.querySelector('[name=status]').value = order.status || 'Naujas';
+  form.querySelector('[name=notes]').value = order.notes || '';
+  form.dataset.orderId = order.id;
+
+  const itemsList = form.querySelector('#edit-items');
+  const existingItems = Array.isArray(order.items) && order.items.length
+    ? order.items.map(i => ({ id: String(i.id), name: i.name, price: Number(i.price) || 0, quantity: Number(i.quantity) || 1 }))
+    : [{ id: order.productId || order.id, name: order.productName || '', price: Number(order.price) || 0, quantity: Number(order.quantity) || 1 }];
+
+  const renderItems = () => {
+    itemsList.innerHTML = existingItems.map((item, idx) => `
+      <div class="edit-item-row" data-index="${idx}">
+        <select name="item_id" data-idx="${idx}" required>
+          <option value="">— Pasirinkti produktą —</option>
+          ${allProducts.map(p => `<option value="${escapeHTML(p.id)}" data-name="${escapeHTML(p.name)}" data-price="${p.price}" ${String(p.id) === String(item.id) ? 'selected' : ''}>${escapeHTML(p.name)} (${money(p.price)})</option>`).join('')}
+        </select>
+        <input name="item_qty" data-idx="${idx}" type="number" min="1" step="1" value="${item.quantity}" required />
+        <button type="button" class="remove-item" data-idx="${idx}" aria-label="Pašalinti">×</button>
+      </div>
+    `).join('');
+    itemsList.querySelectorAll('select[name=item_id]').forEach(sel => {
+      sel.onchange = () => {
+        const idx = Number(sel.dataset.idx);
+        const opt = sel.selectedOptions[0];
+        existingItems[idx].id = sel.value;
+        existingItems[idx].name = opt?.dataset.name || '';
+        existingItems[idx].price = Number(opt?.dataset.price) || 0;
+      };
+    });
+    itemsList.querySelectorAll('input[name=item_qty]').forEach(inp => {
+      inp.oninput = () => {
+        const idx = Number(inp.dataset.idx);
+        existingItems[idx].quantity = Math.max(1, Math.floor(Number(inp.value) || 1));
+      };
+    });
+    itemsList.querySelectorAll('.remove-item').forEach(btn => {
+      btn.onclick = () => {
+        const idx = Number(btn.dataset.idx);
+        existingItems.splice(idx, 1);
+        renderItems();
+      };
+    });
+    const total = existingItems.reduce((s, i) => s + i.price * i.quantity, 0);
+    form.querySelector('#edit-total').textContent = money(total);
+  };
+
+  renderItems();
+
+  form.querySelector('#add-item').onclick = (event) => {
+    event.preventDefault();
+    if (!allProducts.length) {
+      alert('Produktų sąrašas tuščias.');
+      return;
+    }
+    const first = allProducts[0];
+    existingItems.push({ id: first.id, name: first.name, price: Number(first.price) || 0, quantity: 1 });
+    renderItems();
+  };
+
+  form.onsubmit = async (event) => {
+    event.preventDefault();
+    const submitBtn = form.querySelector('button[type=submit]');
+    submitBtn.disabled = true;
+    try {
+      const fd = new FormData(form);
+      const items = existingItems.filter(i => i.id && i.quantity > 0);
+      if (!items.length) throw new Error('Pasirinkite bent vieną produktą');
+      const payload = {
+        customer: fd.get('customer'),
+        phone: fd.get('phone') || null,
+        email: fd.get('email') || null,
+        date: fd.get('date') || null,
+        notes: fd.get('notes') || null,
+        status: fd.get('status'),
+        items
+      };
+      await apiPut('/api/orders/' + encodeURIComponent(order.id), payload);
+      dialog.close();
+      await loadOrders();
+    } catch (err) {
+      alert('Nepavyko išsaugoti: ' + err.message);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  };
+
+  dialog.querySelector('#cancel-edit').onclick = () => dialog.close();
+  dialog.querySelector('#cancel-edit-2').onclick = () => dialog.close();
+  dialog.showModal();
 }
 
 document.querySelector('#export-orders').onclick = () => {
