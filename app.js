@@ -22,6 +22,15 @@ async function apiPost(path, body) {
   return data;
 }
 
+function getAdminUserId() {
+  try {
+    const user = JSON.parse(localStorage.getItem('pieno-gaminiai-admin-user-v1') || 'null');
+    return user && user.id ? user.id : null;
+  } catch {
+    return null;
+  }
+}
+
 async function loadProducts() {
   const statusEl = document.querySelector('#products-status');
   const pickerEl = document.querySelector('#product-picker');
@@ -152,7 +161,8 @@ document.querySelector('#order-form').addEventListener('submit', async event => 
       email: data.email || '',
       date: data.date || null,
       notes: data.notes || '',
-      items
+      items,
+      createdByUserId: getAdminUserId() || null
     });
     form.reset();
     resetProductQuantities();

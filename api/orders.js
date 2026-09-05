@@ -59,8 +59,10 @@ async function getOrders(req, res) {
   }
 
   const orderRows = await query(
-    `SELECT o.id, o.customer, o.phone, o.email, o.date, o.notes, o.status, o.total, o.created_at
+    `SELECT o.id, o.customer, o.phone, o.email, o.date, o.notes, o.status, o.total, o.created_at, o.created_by_user_id,
+            u.display_name AS created_by_name, u.username AS created_by_username, u.role AS created_by_role
      FROM orders o
+     LEFT JOIN users u ON u.id = o.created_by_user_id
      WHERE ${where}
      ORDER BY o.created_at DESC
      LIMIT ?`,
@@ -103,6 +105,12 @@ async function getOrders(req, res) {
       notes: o.notes || '',
       status: o.status,
       createdAt: o.created_at,
+      createdByUserId: o.created_by_user_id || null,
+      createdBy: o.created_by_user_id ? {
+        id: o.created_by_user_id,
+        name: o.created_by_name || o.created_by_username || 'Administratorius',
+        role: o.created_by_role || 'admin'
+      } : null,
       items,
       productName,
       quantity: totalQuantity,
@@ -115,7 +123,7 @@ async function getOrders(req, res) {
 }
 
 async function createOrder(req, res) {
-  const { customer, phone, email, date, notes, items } = req.body || {};
+  const { customer, phone, email, date, notes, items, createdByUserId } = req.body || {};
   if (!customer || !String(customer).trim()) {
     return res.status(400).json({ error: 'Trūksta vardo' });
   }
@@ -138,6 +146,7 @@ async function createOrder(req, res) {
 
   const total = cleanItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const orderId = randomUUID();
+  const userId = Number(createdByUserId) > 0 ? Number(createdByUserId) : null;
 
   const pool = getPool();
   const conn = await pool.getConnection();
@@ -145,8 +154,8 @@ async function createOrder(req, res) {
     await conn.beginTransaction();
 
     await conn.query(
-      `INSERT INTO orders (id, customer, phone, email, date, notes, status, total)
-       VALUES (?, ?, ?, ?, ?, ?, 'Naujas', ?)`,
+      `INSERT INTO orders (id, customer, phone, email, date, notes, created_by_user_id, status, total)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'Naujas', ?)`,
       [
         orderId,
         String(customer).trim().slice(0, 150),
@@ -154,6 +163,7 @@ async function createOrder(req, res) {
         email ? String(email).trim().slice(0, 150) : null,
         date || null,
         notes ? String(notes).trim().slice(0, 1000) : null,
+        userId,
         total.toFixed(2)
       ]
     );

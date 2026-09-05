@@ -41,6 +41,8 @@
 
 .users-list{display:grid;gap:8px}
 .order-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:6px}
+.order-created-by{margin:6px 0 0;font-size:12px;color:var(--forest);line-height:1.3}
+.order-created-by.muted{color:var(--muted);font-style:italic}
 .order-actions .edit-order,.order-actions .delete-order{padding:6px 12px;border:1px solid var(--line);border-radius:7px;background:#fffefa;font:600 12px "DM Sans",sans-serif;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .order-actions .edit-order{color:var(--forest);border-color:#b7c4b1}
 .order-actions .edit-order:hover{background:#eaf2e8;border-color:#8bb594}
