@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Neteisingas vartotojo vardas arba slaptažodis' });
     }
 
-    const token = await signToken({
+    const token = signToken({
       uid: user.id,
       username: user.username,
       displayName: user.display_name,
