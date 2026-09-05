@@ -8,6 +8,6 @@
     "start": "node api/dev-server.js"
   },
   "dependencies": {
-    "mysql2": "^3.11.0"
+    "mysql2": "^3.24.3"
   }
 }
