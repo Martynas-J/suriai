@@ -1,0 +1,7 @@
+[
+  {"id":"suris-be-kmynu","name":"Sūris be kmynų","description":"Švelnaus skonio natūralus sūris.","price":7,"unit":"vnt.","tag":"Natūralus","emoji":"🧀"},
+  {"id":"suris-su-kmynais","name":"Sūris su kmynais","description":"Tradicinis sūris su kvapniais kmynais.","price":8,"unit":"vnt.","tag":"Tradicinis","emoji":"🧀"},
+  {"id":"keptas-suris","name":"Keptas sūris","description":"Gardus, namuose keptas sūris.","price":10,"unit":"vnt.","tag":"Populiarus","emoji":"🧀"},
+  {"id":"grietine","name":"Grietinė","description":"Šviežia, riebi grietinė kasdieniam stalui.","price":7,"unit":"1 kg","tag":"Šviežia","emoji":"🥛"},
+  {"id":"sviestas","name":"Sviestas","description":"Natūralus sviestas iš šviežios grietinėlės.","price":12,"unit":"kg","tag":"Ūkiškas","emoji":"🧈"}
+]

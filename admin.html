@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2f3f38" />
+    <title>Administravimas — Pieno gaminiai</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="redesign.css" />
+    <link rel="stylesheet" href="admin-extras.css" />
+    <link rel="stylesheet" href="dashboard-nav.css" />
+  </head>
+  <body class="admin-page">
+    <main class="dashboard-shell">
+      <header class="dashboard-header">
+        <div class="dashboard-header-left">
+          <p class="eyebrow">Valdymo centras</p>
+          <h1>Užsakymų valdymas</h1>
+          <p class="muted" id="current-user">Priimkite ir tvarkykite klientų užsakymus.</p>
+        </div>
+        <div class="dashboard-nav">
+          <a class="is-active" href="admin.html" data-tab="orders">Užsakymai</a>
+          <a href="stats.html">Statistika</a>
+          <a class="back-link" href="index.html">← Produktai</a>
+          <div class="dashboard-nav-divider" aria-hidden="true"></div>
+          <a href="#" data-tab="users" id="users-tab-link" hidden>Vartotojai</a>
+          <button id="refresh-orders" class="text-button" type="button">Atnaujinti</button>
+          <div class="export-group">
+            <button id="export-orders" class="text-button" type="button">Atsisiųsti</button>
+            <select id="export-format" class="export-format" aria-label="Eksporto formatas"><option value="txt">TXT</option><option value="doc">Word</option></select>
+          </div>
+          <button id="logout-btn" class="text-button" type="button">Atsijungti</button>
+        </div>
+      </header>
+
+      <section id="admin-login" class="login-box dashboard-login">
+        <h2>Prisijungimas</h2>
+        <p>Įveskite administratoriaus duomenis.</p>
+        <form id="login-form">
+          <label class="login-field"><span>Vartotojo vardas</span><input id="admin-username" type="text" autocomplete="username" placeholder="admin" required autofocus /></label>
+          <label class="login-field"><span>Slaptažodis</span><input id="admin-password" type="password" autocomplete="current-password" placeholder="••••••" required /></label>
+          <button class="button button-dark" type="submit">Prisijungti</button>
+        </form>
+        <p id="login-error" class="error" role="alert"></p>
+      </section>
+
+      <section id="admin-content" hidden>
+        <div class="orders-summary-bar" data-pane="orders"><h2>Užsakymai</h2><p id="order-total" class="muted"></p></div>
+        <section class="admin-filters" data-pane="orders" aria-label="Užsakymų filtrai">
+          <label>Nuo datos<input id="filter-date-from" type="date" /></label>
+          <label>Iki datos<input id="filter-date-to" type="date" /></label>
+          <label>Būsena<select id="filter-status"><option value="all">Visos būsenos</option><option selected>Naujas</option><option>Patvirtintas</option><option>Įvykdytas</option><option>Atšauktas</option></select></label>
+          <label>Produktas<select id="filter-product"><option value="all">Visi produktai</option></select></label>
+          <label>Paieška<input id="filter-search" type="search" placeholder="Vardas, telefonas ar produktas" /></label>
+          <label>Rikiuoti<select id="sort-orders"><option value="newest">Naujausi pirmi</option><option value="delivery">Artimiausia data</option><option value="value">Didžiausia vertė</option><option value="customer">Kliento vardas</option></select></label>
+          <label>Rodyti<select id="page-size"><option value="10">10 užsakymų</option><option value="25">25 užsakymai</option><option value="50">50 užsakymų</option></select></label>
+          <button id="clear-filters" class="filter-reset" type="button">Valyti filtrus</button>
+        </section>
+        <div class="orders-toolbar" data-pane="orders"><p id="orders-summary" class="muted"></p></div>
+        <div id="orders-list" class="orders-list" data-pane="orders"></div>
+        <nav id="pagination" class="pagination" data-pane="orders" aria-label="Užsakymų puslapiai"></nav>
+
+        <section data-pane="users" hidden>
+          <div class="orders-summary-bar"><h2>Vartotojai</h2><p class="muted">Super admin valdymas</p></div>
+          <div class="users-toolbar">
+            <form id="user-create-form" class="user-create-form">
+              <label>Vartotojo vardas<input name="username" required autocomplete="off" placeholder="pvz. vardenis" /></label>
+              <label>Vardas, pavardė<input name="displayName" required autocomplete="off" placeholder="Vardenė Pavardenė" /></label>
+              <label>Slaptažodis<input name="password" type="password" required autocomplete="new-password" placeholder="min. 6 simboliai" minlength="6" /></label>
+              <label>Rolė<select name="role"><option value="admin">Administratorius</option><option value="super_admin">Super administratorius</option></select></label>
+              <button type="submit" class="button button-dark">Pridėti</button>
+            </form>
+          </div>
+          <div id="users-list" class="users-list"></div>
+        </section>
+      </section>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>

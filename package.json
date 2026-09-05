@@ -1,0 +1,13 @@
+{
+  "name": "s-riai-gh-pages",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node api/dev-server.js",
+    "start": "node api/dev-server.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}

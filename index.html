@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#b94825" />
+    <title>Pieno gaminiai — užsakymai</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="redesign.css" />
+    <link rel="stylesheet" href="menu-cta.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#pradzia">pieno gaminiai<span>.</span></a>
+      <nav aria-label="Pagrindinė navigacija">
+        <a href="#meniu">Produktai</a>
+        <a href="#uzsakymas">Užsakyti</a>
+      </nav>
+      <a class="admin-link" href="admin.html">Administravimas</a>
+    </header>
+
+    <main id="pradzia">
+      <section class="hero">
+        <p class="eyebrow">Iš mūsų ūkio — į jūsų namus</p>
+        <h1>Naminiai pieno<br />gaminiai kiekvienai dienai.</h1>
+        <p class="hero-text">Šviežias sūris, kvapni grietinė ir tikras ūkiškas sviestas — užsakykite internetu ir atsiimkite arba atvešime.</p>
+                <div class="hero-cta">
+          <a class="button button-accent" href="#uzsakymas">Užsakyti dabar <span>→</span></a>
+          <a class="button button-dark" href="#meniu">Peržiūrėti asortimentą <span>↓</span></a>
+        </div>
+        <div class="hero-shape shape-one"></div><div class="hero-shape shape-two"></div>
+      </section>
+
+      <section class="menu-section" id="meniu">
+        <div class="section-heading">
+          <div><p class="eyebrow">Šviežias derlius</p><h2>Mūsų asortimentas</h2></div>
+          <p id="menu-count" class="muted"></p>
+        </div>
+        <div id="product-grid" class="product-grid" aria-live="polite"></div>
+        <div class="menu-cta"><a class="button button-accent" href="#uzsakymas">Užsakyti pasirinktus <span>→</span></a></div>
+      </section>
+
+      <section class="order-section" id="uzsakymas">
+        <div class="order-intro">
+          <p class="eyebrow">Greita ir paprasta</p>
+          <h2>Pateikite užsakymą</h2>
+          <p>Pasirinkite produktą, kiekį ir palikite kontaktus. Susisieksime užsakymui patvirtinti.</p>
+          <div class="note"><span>✦</span> Užsakymus priimame iš anksto.</div>
+        </div>
+        <form id="order-form" class="order-form">
+          <fieldset class="product-picker" id="product-picker" hidden>
+            <legend>Pasirinkite produktus</legend>
+            <div id="product-options" class="product-options" aria-live="polite"></div>
+            <p class="form-error" id="product-error" role="alert"></p>
+          </fieldset>
+          <p class="products-status" id="products-status">Kraunama produktų…</p>
+          <div class="form-row">
+            <label><span class="label-text">Jūsų vardas</span><input name="customer" autocomplete="name" placeholder="Vardas Pavardė" required /></label>
+            <label><span class="label-text">Pageidaujama data <span class="optional">(nebūtina)</span></span><input name="date" type="date" /></label>
+          </div>
+          <div class="form-row">
+            <label><span class="label-text">Telefonas <span class="optional">(nebūtina)</span></span><input name="phone" autocomplete="tel" placeholder="+370 600 00000" /></label>
+            <label><span class="label-text">El. paštas <span class="optional">(nebūtina)</span></span><input name="email" type="email" autocomplete="email" placeholder="jusu@email.lt" /></label>
+          </div>
+          <label><span class="label-text">Pastabos <span class="optional">(nebūtina)</span></span><textarea name="notes" rows="3" placeholder="Pvz., pristatymo laikas, alergijos…"></textarea></label>
+          <div class="order-total"><span>Bendra suma:</span><strong id="order-total-preview">0,00 €</strong></div>
+          <button class="button button-accent" type="submit">Siųsti užsakymą <span>→</span></button>
+          <p class="form-message" id="form-message" role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
