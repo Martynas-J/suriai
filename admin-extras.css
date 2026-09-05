@@ -6,6 +6,7 @@
 .status-chip.is-active span{color:#f2bd89}
 
 .login-box{position:relative;overflow:hidden;display:grid;gap:14px;align-items:start}
+.login-box[hidden],.dashboard-login[hidden],[hidden]{display:none !important}
 .login-box>*{width:100%}
 .login-box form{display:grid;gap:14px;width:100%}
 .login-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#fff 0%,#fffefa 40%,#f5f0e3 100%);z-index:0;pointer-events:none}
