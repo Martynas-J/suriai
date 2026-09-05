@@ -23,11 +23,18 @@ async function apiPost(path, body) {
 }
 
 async function loadProducts() {
+  const statusEl = document.querySelector('#products-status');
+  const pickerEl = document.querySelector('#product-picker');
   try {
     products = await apiGet('/api/products');
   } catch (err) {
     console.error('Nepavyko gauti produktų:', err);
     products = [];
+    if (statusEl) {
+      statusEl.textContent = 'Nepavyko užkrauti produktų. Pabandykite atnaujinti puslapį.';
+      statusEl.style.color = '#a02b1f';
+    }
+    return;
   }
   document.querySelector('#menu-count').textContent = products.length ? `${products.length} produktai` : 'Nėra produktų';
   document.querySelector('#product-grid').innerHTML = products.length
@@ -37,7 +44,7 @@ async function loadProducts() {
 
   const container = document.querySelector('#product-options');
   if (container) {
-    container.innerHTML = products.map(item => `
+    container.innerHTML = products.length ? products.map(item => `
       <div class="product-option" data-id="${item.id}" data-price="${item.price}">
         <span class="product-option-info">
           <span class="product-option-emoji" aria-hidden="true">${item.emoji || '🧀'}</span>
@@ -51,9 +58,13 @@ async function loadProducts() {
           <input type="number" name="qty_${item.id}" min="0" value="0" inputmode="numeric" aria-label="${escapeHTML(item.name)} kiekis" />
           <button type="button" class="qty-btn" data-step="1" aria-label="${escapeHTML(item.name)} daugiau">+</button>
         </span>
-      </div>`).join('');
-    bindProductOptions();
+      </div>`).join('') : '<p class="empty">Šiuo metu produktų nėra.</p>';
+    if (products.length) bindProductOptions();
   }
+
+  if (statusEl) statusEl.hidden = true;
+  if (pickerEl) pickerEl.hidden = products.length === 0;
+
   setDefaultDate();
 }
 
